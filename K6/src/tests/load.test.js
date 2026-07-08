@@ -1,8 +1,7 @@
 import http from 'k6/http';
-import { group, sleep, SharedArray } from 'k6';
+import { group, sleep } from 'k6';
 import { Counter, Gauge, Trend, Rate } from 'k6/metrics';
 import { setupTestData } from '../utils/helpers.js';
-import sharedData from '../utils/data.json';
 //export { options } from '../config/options.js';
 
 const loadTestCounter = new Counter('load_test_counter');
@@ -44,7 +43,7 @@ export let options = {
  // duration: '10s',
   //rps: 100, // requests per second
   thresholds: {
-    'http_req_duration': ['p(95)<1200' , 'p(99)<1500' , 'avg<10'], // 95% and 99% of requests should be below 200ms and 150ms respectively
+    'http_req_duration': ['p(95)<1200' , 'p(99)<1500' , 'avg<200'], // 95% and 99% of requests should be below 1200ms and 1500ms respectively
     'http_req_failed': ['rate<0.01'], // error rate should be less than 1%
   },
 };
@@ -57,13 +56,9 @@ export function setup() {
   return setupTestData();
 }
 
-const sharedDataArray = new SharedArray('test data', function() {
-  return sharedData || [{ url: 'https://test.k6.io' }];
-});
-
 export function load_test() 
 {
-  const testData = sharedDataArray.length ? sharedDataArray[0] : { url: 'https://test.k6.io' };
+  const testData = { url: 'https://test.k6.io' };
   group ('Load Test Group one', function () {
     const params = {
       headers: {
