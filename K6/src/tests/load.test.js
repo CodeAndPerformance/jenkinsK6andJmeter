@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { group, sleep, SharedArray } from 'k6';
 import { Counter, Gauge, Trend, Rate } from 'k6/metrics';
 import { setupTestData } from '../utils/helpers.js';
-import { sharedData } from '../utils/data.json';
+import sharedData from '../utils/data.json';
 //export { options } from '../config/options.js';
 
 const loadTestCounter = new Counter('load_test_counter');
