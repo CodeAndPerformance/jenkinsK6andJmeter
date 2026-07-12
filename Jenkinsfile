@@ -1,6 +1,17 @@
 pipeline {
 
-    agent any
+    agent none
+
+    parameters {
+        choice(
+            name: 'AGENT',
+            choices: [
+                'perf-agent-1',
+                'perf-agent-2',
+                'perf-agent-3'
+            ],
+            description: 'Select Jenkins Agent'
+        )
 
     environment {
         JMETER_HOME = 'C:\\apache-jmeter-5.6.3\\apache-jmeter-5.6.3'
