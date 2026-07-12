@@ -2,9 +2,6 @@ pipeline {
 
     agent none
 
-    parameters {
-        
-	}
     environment {
         JMETER_HOME = 'C:\\apache-jmeter-5.6.3\\apache-jmeter-5.6.3'
         K6_HOME     = 'C:\\Program Files\\k6'
@@ -38,13 +35,18 @@ pipeline {
     stages {
 
         stage('Checkout') {
+			agent {
+				label "${params.AGENT}"
+			}
             steps {
                 checkout scm
             }
         }
 
         stage('Run JMeter') {
-
+			agent {
+				label "${params.AGENT}"
+			}
             when {
                 expression { params.TOOL == 'JMeter' }
             }
@@ -66,7 +68,9 @@ pipeline {
         }
 
         stage('Run K6') {
-
+			agent {
+				label "${params.AGENT}"
+			}
             when {
                 expression { params.TOOL == 'K6' }
             }
@@ -85,7 +89,9 @@ pipeline {
         }
 
         stage('Publish JMeter Report') {
-
+			agent {
+				label "${params.AGENT}"
+			}
             when {
                 expression { params.TOOL == 'JMeter' }
             }
@@ -104,6 +110,9 @@ pipeline {
         }
 		
 		stage('Create Metrics Folder') {
+			agent {
+				label "${params.AGENT}"
+			}
 			steps {
 				bat '''
 				if not exist metrics mkdir metrics
@@ -112,7 +121,9 @@ pipeline {
 }
 		
 		stage('Extract Metrics') {
-
+			agent {
+				label "${params.AGENT}"
+			}
 			steps {
 
 				script {
@@ -135,7 +146,9 @@ pipeline {
 
 }
 		stage('Compare With Previous Build') {
-
+			agent {
+				label "${params.AGENT}"
+			}
 			steps {
 
 				script {
@@ -152,7 +165,9 @@ pipeline {
 
 
 		stage('Get Previous Metrics') {
-
+			agent {
+				label "${params.AGENT}"
+			}
 			steps {
 
 				copyArtifacts(
@@ -168,7 +183,9 @@ pipeline {
 }
 
 		stage('Compare Metrics') {
-
+			agent {
+				label "${params.AGENT}"
+			}
 			steps {
 
 				script {
