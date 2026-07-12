@@ -1,4 +1,4 @@
-def stats = readJSON file: "report/content/statistics.json"
+def stats = readJSON file: "report/statistics.json"
 
 def total = stats["Total"]
 
