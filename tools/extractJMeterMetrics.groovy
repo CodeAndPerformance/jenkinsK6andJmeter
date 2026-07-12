@@ -1,6 +1,9 @@
+import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 
-def stats = readJSON file: "report/content/statistics.json"
+def stats = new JsonSlurper().parseText(readFile('report/content/statistics.json'))
+
+//def stats = readJSON file: "report/content/statistics.json"
 
 def total = stats["Total"]
 
@@ -30,10 +33,11 @@ def metrics = [
 
 ]
 
-writeJSON(
-        file: "metrics/currentMetrics.json",
-        json: metrics,
-        pretty: 4
+
+
+writeFile(
+        file: 'metrics/currentMetrics.json',
+        text: JsonOutput.prettyPrint(JsonOutput.toJson(metrics))
 )
 
 echo "========== Current Metrics =========="

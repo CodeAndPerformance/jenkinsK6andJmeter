@@ -89,6 +89,15 @@ pipeline {
                 ])
             }
         }
+		
+		stage('Create Metrics Folder') {
+			steps {
+				bat '''
+				if not exist metrics mkdir metrics
+				'''
+    }
+}
+		
 		stage('Extract Metrics') {
 
 			steps {
@@ -126,13 +135,7 @@ pipeline {
 
 }
 
-		stage('Create Metrics Folder') {
-			steps {
-				bat '''
-				if not exist metrics mkdir metrics
-				'''
-    }
-}
+
 
 
 		stage('Get Previous Metrics') {
