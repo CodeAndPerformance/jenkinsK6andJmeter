@@ -1,7 +1,17 @@
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
+import groovy.transform.NonCPS
 
-def stats = new JsonSlurper().parseText(readFile('report/content/statistics.json'))
+@NonCPS
+def parseJson(String json) {
+    new JsonSlurper().parseText(json)
+}
+
+def jsonText = readFile('report/content/statistics.json')
+def stats = parseJson(jsonText)
+
+
+//def stats = new JsonSlurper().parseText(readFile('report/content/statistics.json'))
 
 //def stats = readJSON file: "report/content/statistics.json"
 
