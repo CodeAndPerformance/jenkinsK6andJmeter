@@ -1,14 +1,19 @@
 //import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
+//import groovy.json.JsonSlurper
 
 def config = load "tools/config.groovy"
 
 //def current = readJSON file: "metrics/currentMetrics.json"
 
 
-def current = new JsonSlurper().parseText(readFile("metrics/currentMetrics.json"))
+//def current = new JsonSlurper().parseText(readFile("metrics/currentMetrics.json"))
 
-def previous = new JsonSlurper().parseText(readFile("previous/metrics/currentMetrics.json"))
+//def previous = new JsonSlurper().parseText(readFile("previous/metrics/currentMetrics.json"))
+
+
+def current = readJSON file: "metrics/currentMetrics.json"
+
+
 
 if(!fileExists("previous/metrics/currentMetrics.json")){
 
@@ -18,6 +23,7 @@ if(!fileExists("previous/metrics/currentMetrics.json")){
 
 }
 
+def previous = readJSON file: "previous/metrics/currentMetrics.json"
 //def previous = readJSON file: "previous/metrics/currentMetrics.json"
 
 echo ""
