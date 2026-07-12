@@ -89,7 +89,92 @@ pipeline {
                 ])
             }
         }
+		stage('Extract Metrics') {
 
+			steps {
+
+				script {
+
+					if(params.TOOL == "JMeter") {
+
+						load "tools/extractJMeterMetrics.groovy"
+
+					}
+
+					if(params.TOOL == "K6") {
+
+						load "tools/extractK6Metrics.groovy"
+
+					}
+
+        }
+
+    }
+
+}
+		stage('Compare With Previous Build') {
+
+			steps {
+
+				script {
+
+					load "tools/compareMetrics.groovy"
+
+				}
+
+			}
+
+}
+
+		stage('Create Metrics Folder') {
+			steps {
+				bat '''
+				if not exist metrics mkdir metrics
+				'''
+    }
+}
+
+		stage('Extract Metrics') {
+			when {
+				expression { params.TOOL == 'JMeter' }
+			}
+
+			steps {
+				script {
+					load "tools/extractJMeterMetrics.groovy"
+				}
+			}
+}
+
+		stage('Get Previous Metrics') {
+
+			steps {
+
+				copyArtifacts(
+					projectName: env.JOB_NAME,
+					selector: lastSuccessful(),
+					filter: 'metrics/currentMetrics.json',
+					target: 'previous',
+					optional: true
+				)
+
+			}
+
+}
+
+		stage('Compare Metrics') {
+
+			steps {
+
+				script {
+
+					load "tools/compareMetrics.groovy"
+
+				}
+
+    }
+
+}
     }
 
     post {
@@ -104,6 +189,8 @@ pipeline {
 
             archiveArtifacts allowEmptyArchive: true,
                              artifacts: 'k6/results/**'
+							 
+			archiveArtifacts artifacts: 'metrics/currentMetrics.json'
         }
     }
 }
