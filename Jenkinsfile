@@ -12,7 +12,7 @@ pipeline {
             ],
             description: 'Select Jenkins Agent'
         )
-
+	}
     environment {
         JMETER_HOME = 'C:\\apache-jmeter-5.6.3\\apache-jmeter-5.6.3'
         K6_HOME     = 'C:\\Program Files\\k6'
