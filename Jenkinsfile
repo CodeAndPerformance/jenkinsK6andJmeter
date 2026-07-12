@@ -134,17 +134,6 @@ pipeline {
     }
 }
 
-		stage('Extract Metrics') {
-			when {
-				expression { params.TOOL == 'JMeter' }
-			}
-
-			steps {
-				script {
-					load "tools/extractJMeterMetrics.groovy"
-				}
-			}
-}
 
 		stage('Get Previous Metrics') {
 
