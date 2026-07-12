@@ -1,6 +1,8 @@
 pipeline {
 
-    agent none
+    agent {
+        label "${params.AGENT}"
+    }
 
     environment {
         JMETER_HOME = 'C:\\apache-jmeter-5.6.3\\apache-jmeter-5.6.3'
@@ -13,6 +15,12 @@ pipeline {
             name: 'TOOL',
             choices: ['JMeter', 'K6'],
             description: 'Select Performance Tool'
+        )
+		
+		choice(
+            name: 'SCRIPT_NAME',
+            choices: ['Jenkins.jmx', 'load.test.js'],
+            description: 'Select Performance script'
         )
 
         string(
@@ -145,24 +153,6 @@ pipeline {
     }
 
 }
-		stage('Compare With Previous Build') {
-			agent {
-				label "${params.AGENT}"
-			}
-			steps {
-
-				script {
-
-					load "tools/compareMetrics.groovy"
-
-				}
-
-			}
-
-}
-
-
-
 
 		stage('Get Previous Metrics') {
 			agent {
@@ -182,7 +172,7 @@ pipeline {
 
 }
 
-		stage('Compare Metrics') {
+		stage('Compare With Previous Build') {
 			agent {
 				label "${params.AGENT}"
 			}
@@ -194,14 +184,14 @@ pipeline {
 
 				}
 
-    }
+			}
 
 }
     }
 
     post {
-
-        always {
+    always {
+        node(params.AGENT) {
 
             archiveArtifacts allowEmptyArchive: true,
                              artifacts: 'results.jtl'
@@ -211,8 +201,10 @@ pipeline {
 
             archiveArtifacts allowEmptyArchive: true,
                              artifacts: 'k6/results/**'
-							 
-			archiveArtifacts artifacts: 'metrics/currentMetrics.json'
+
+            archiveArtifacts allowEmptyArchive: true,
+                             artifacts: 'metrics/currentMetrics.json'
         }
     }
+}
 }
