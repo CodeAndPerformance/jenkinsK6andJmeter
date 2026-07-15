@@ -175,7 +175,7 @@ pipeline {
 
     post {
     always {
-        node(params.AGENT) {
+        
 
             archiveArtifacts allowEmptyArchive: true,
                              artifacts: 'results.jtl'
@@ -188,7 +188,7 @@ pipeline {
 
             archiveArtifacts allowEmptyArchive: true,
                              artifacts: 'metrics/currentMetrics.json'
-        }
+        
     }
 }
 }
