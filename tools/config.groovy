@@ -6,6 +6,9 @@ return [
         errorRateThreshold       : 1,       // %
         throughputDecrease       : 10,      // %
 
+        // Per-transaction CSV threshold (% change on meanResTime)
+        transactionChangeThreshold: 20,
+
         failOnRegression         : true,
         markBuildUnstable        : false
 
