@@ -154,9 +154,52 @@ pipeline {
 					optional: true
 				)
 
+				// Also fetch previous build's per-transaction stats for comparison
+				copyArtifacts(
+					projectName: env.JOB_NAME,
+					selector: lastSuccessful(),
+					filter: 'report/statistics.json',
+					target: 'previous',
+					optional: true
+				)
+
 			}
 
 }
+
+		// Optional validation using sample files, does not fail the build
+		stage('Validate Transaction CSV Logic (Dry Run)') {
+			steps {
+				script {
+					try {
+						def sample = 'tools/samples/statistics.json'
+						def samplePrev = 'tools/samples/previous/statistics.json'
+						if (fileExists(sample) && fileExists(samplePrev)) {
+							def cfg = fileExists('tools/config.groovy') ? load('tools/config.groovy') : [:]
+							def thr = (cfg?.transactionChangeThreshold ?: 20) as double
+							def curr = readJSON file: sample
+							def prev = readJSON file: samplePrev
+							int improved = 0; int degraded = 0
+							curr.each { k, v ->
+								if (k != 'Total' && prev.containsKey(k)) {
+									def base = (prev[k]?.meanResTime ?: 0) as double
+									def nowv = (v?.meanResTime ?: 0) as double
+									if (base > 0) {
+										def ch = ((nowv - base) / base) * 100
+										if (ch >= thr) { degraded++ } else if (ch <= -thr) { improved++ }
+									}
+								}
+							}
+							echo "Dry run: degraded=${degraded}, improved=${improved} (threshold=${thr}%)"
+						} else {
+							echo 'Dry run skipped: sample statistics not found.'
+						}
+					} catch (err) {
+						echo "Dry run encountered an error but will not fail the build: ${err}"
+					}
+				}
+			}
+		}
 
 		stage('Compare With Previous Build') {
 			
@@ -165,12 +208,14 @@ pipeline {
 				script {
 
 					load "tools/compareMetrics.groovy"
+					load "tools/generateDeltaCSVs.groovy"
 
 				}
 
 			}
 
 }
+
     }
 
     post {
@@ -188,6 +233,9 @@ pipeline {
 
             archiveArtifacts allowEmptyArchive: true,
                              artifacts: 'metrics/currentMetrics.json'
+
+            archiveArtifacts allowEmptyArchive: true,
+                             artifacts: 'metrics/*.csv'
         
     }
 }
