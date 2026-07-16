@@ -208,6 +208,7 @@ pipeline {
 				script {
 
 					load "tools/compareMetrics.groovy"
+					load "tools/generateDeltaCSVs.groovy"
 
 				}
 
@@ -215,16 +216,6 @@ pipeline {
 
 }
 
-		stage('Generate Per-Transaction CSVs') {
-			when {
-				expression { params.TOOL == 'JMeter' }
-			}
-			steps {
-				script {
-					load "tools/generateTransactionCSVs.groovy"
-				}
-			}
-		}
     }
 
     post {
